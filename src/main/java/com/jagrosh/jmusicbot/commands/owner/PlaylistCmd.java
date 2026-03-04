@@ -8,14 +8,14 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader.Playlist;
-import com.jagrosh.jmusicbot.utils.OtherUtil;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 public class PlaylistCmd extends OwnerCommand {
     private final Bot bot;
 
     public PlaylistCmd(Bot bot) {
         this.bot = bot;
-        this.guildOnly = false;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         this.name = "playlist";
         this.arguments = "<append|delete|make|setdefault>";
         this.help = "播放清單管理";
@@ -44,7 +44,7 @@ public class PlaylistCmd extends OwnerCommand {
             this.aliases = new String[]{"create"};
             this.help = "建立新的播放清單";
             this.arguments = "<名稱>";
-            this.guildOnly = false;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         }
 
         @Override
@@ -71,7 +71,7 @@ public class PlaylistCmd extends OwnerCommand {
             this.aliases = new String[]{"remove"};
             this.help = "刪除現有播放清單";
             this.arguments = "<名稱>";
-            this.guildOnly = false;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         }
 
         @Override
@@ -96,7 +96,7 @@ public class PlaylistCmd extends OwnerCommand {
             this.aliases = new String[]{"add"};
             this.help = "向現有播放清單加入歌曲";
             this.arguments = "<名稱> <URL> | <URL> | ...";
-            this.guildOnly = false;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         }
 
         @Override
@@ -136,7 +136,7 @@ public class PlaylistCmd extends OwnerCommand {
             this.name = "setDefault";
             this.aliases = new String[]{"default"};
             this.arguments = "<播放清單名稱|NONE>";
-            this.guildOnly = true;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD};
         }
     }
 
@@ -145,7 +145,7 @@ public class PlaylistCmd extends OwnerCommand {
             this.name = "all";
             this.aliases = new String[]{"available", "list"};
             this.help = "列出所有可用播放清單";
-            this.guildOnly = true;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD};
         }
 
         @Override

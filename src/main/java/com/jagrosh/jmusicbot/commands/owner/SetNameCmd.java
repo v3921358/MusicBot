@@ -19,6 +19,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -30,15 +31,15 @@ public class SetNameCmd extends OwnerCommand {
         this.help = "設定機器人的名稱";
         this.arguments = "<名稱>";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = false;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
     }
 
     @Override
     protected void execute(CommandEvent event) {
         try {
-            String oldname = event.getSelfUser().getName();
+            String oldName = event.getSelfUser().getName();
             event.getSelfUser().getManager().setName(event.getArgs()).complete(false);
-            event.reply(event.getClient().getSuccess() + " 名稱已從 `" + oldname + "` 更改為 `" + event.getArgs() + "`");
+            event.reply(event.getClient().getSuccess() + " 名稱已從 `" + oldName + "` 更改為 `" + event.getArgs() + "`");
         } catch (RateLimitedException e) {
             event.reply(event.getClient().getError() + " 名稱每小時只能更改兩次！");
         } catch (Exception e) {

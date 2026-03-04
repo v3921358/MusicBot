@@ -208,7 +208,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
             // Embed 訊息
             EmbedBuilder eb = new EmbedBuilder();
-            eb.setColor(guild.getSelfMember().getColor());
+            eb.setColor(guild.getSelfMember().getColors().getPrimary());
 
             RequestMetadata rm = getRequestMetadata();
             if (rm.getOwner() != 0L) {
@@ -256,7 +256,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                         .setTitle("目前沒有音樂播放")
                         .setDescription(STOP_EMOJI + " " + FormatUtil.progressBar(-1)
                                 + " " + FormatUtil.volumeIcon(audioPlayer.getVolume()))
-                        .setColor(guild.getSelfMember().getColor())
+                        .setColor(guild.getSelfMember().getColors().getPrimary())
                         .build())
                 .build();
     }

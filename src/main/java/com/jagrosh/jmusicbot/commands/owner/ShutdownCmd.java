@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -17,7 +18,7 @@ public class ShutdownCmd extends OwnerCommand {
         this.name = "shutdown";
         this.help = "安全地關閉機器人";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = false;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
     }
 
     @Override

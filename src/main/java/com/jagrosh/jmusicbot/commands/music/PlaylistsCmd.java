@@ -18,7 +18,7 @@ import java.util.List;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
-import com.jagrosh.jmusicbot.utils.OtherUtil;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -30,7 +30,7 @@ public class PlaylistsCmd extends MusicCommand {
         this.name = "playLists";
         this.help = "顯示可用的播放清單";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = true; // 只能在伺服器使用
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD}; // 只能在伺服器使用
         this.beListening = false; // 不需要機器人在語音頻道中
     }
 

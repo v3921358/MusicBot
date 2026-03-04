@@ -23,6 +23,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -38,7 +39,7 @@ public class EvalCmd extends OwnerCommand {
         this.help = "評估 Nashorn 代碼";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.engine = bot.getConfig().getEvalEngine();
-        this.guildOnly = false;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
     }
 
     @Override

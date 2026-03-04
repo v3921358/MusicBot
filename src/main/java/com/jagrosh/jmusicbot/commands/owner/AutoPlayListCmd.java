@@ -17,6 +17,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -27,7 +28,7 @@ public class AutoPlayListCmd extends OwnerCommand {
 
     public AutoPlayListCmd(Bot bot) {
         this.bot = bot;
-        this.guildOnly = true;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD};
         this.name = "autoPlaylist";
         this.arguments = "<名稱|NONE>";
         this.help = "設定伺服器的預設播放列表";

@@ -37,7 +37,11 @@ import com.jagrosh.jmusicbot.utils.FormatUtil;
 import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 /**
@@ -117,31 +121,37 @@ public class PlayCmd extends MusicCommand {
                     + "** (`" + TimeUtil.formatTime(track.getDuration()) + "`) "
                     + (pos == 0 ? "開始播放" : "加入隊列於位置 " + pos));
 
-            if (playlist == null || !event.getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_ADD_REACTION))
+            // 如果沒有播放清單，或者沒有發送組件的權限，就直接編輯訊息
+            if (playlist == null || !event.getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_HISTORY)) {
                 m.editMessage(addMsg).queue();
-            else {
-                new ButtonMenu.Builder()
-                        .setText(addMsg + "\n" + event.getClient().getWarning()
-                                + " 此曲目附帶含 **" + playlist.getTracks().size() + "** 首歌曲的播放清單。選擇 "
-                                + LOAD + " 以載入播放清單。")
-                        .setChoices(LOAD, CANCEL)
-                        .setEventWaiter(bot.getWaiter())
-                        .setTimeout(30, TimeUnit.SECONDS)
-                        .setAction(re ->
-                        {
-                            if (re.getName().equals(LOAD))
-                                m.editMessage(addMsg + "\n"
-                                        + event.getClient().getSuccess() + " 已載入 **"
-                                        + loadPlaylist(playlist, track) + "** 首額外曲目！").queue();
-                            else
-                                m.editMessage(addMsg).queue();
-                        })
-                        .setFinalAction(me ->
-                        {
-                            try {
-                                me.clearReactions().queue();
-                            } catch (PermissionException ignore) {}
-                        }).build().display(m);
+            } else {
+                // 使用原生按鈕取代 ButtonMenu
+                Button loadBtn = Button.primary("load_playlist", "載入播放清單").withEmoji(Emoji.fromFormatted(LOAD));
+                Button cancelBtn = Button.secondary("cancel_playlist", "僅播放此曲").withEmoji(Emoji.fromFormatted(CANCEL));
+
+                m.editMessage(addMsg + "\n" + event.getClient().getWarning()
+                                + " 此曲目附帶含 **" + playlist.getTracks().size() + "** 首歌曲的播放清單。請選擇是否載入。")
+                        .setComponents(ActionRow.of(loadBtn, cancelBtn))
+                        .queue(msg -> {
+                            bot.getWaiter().waitForEvent(
+                                    ButtonInteractionEvent.class,
+                                    e -> e.getMessageId().equals(msg.getId()) && e.getUser().equals(event.getAuthor()),
+                                    e -> {
+                                        if (e.getComponentId().equals("load_playlist")) {
+                                            int count = loadPlaylist(playlist, track);
+                                            e.editMessage(addMsg + "\n"
+                                                            + event.getClient().getSuccess() + " 已載入 **"
+                                                            + count + "** 首額外曲目！")
+                                                    .setComponents().queue(); // 移除按鈕
+                                        } else {
+                                            e.editMessage(addMsg)
+                                                    .setComponents().queue(); // 移除按鈕
+                                        }
+                                    },
+                                    30, TimeUnit.SECONDS,
+                                    () -> msg.editMessage(addMsg).setComponents().queue() // 超時移除按鈕
+                            );
+                        });
             }
         }
 

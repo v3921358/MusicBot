@@ -18,6 +18,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -29,7 +30,7 @@ public class SetGameCmd extends OwnerCommand {
         this.help = "設定機器人正在玩的遊戲";
         this.arguments = "[動作] [遊戲名稱]";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = false;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         this.children = new OwnerCommand[]{
                 new SetlistenCmd(),
                 new SetstreamCmd(),
@@ -55,7 +56,7 @@ public class SetGameCmd extends OwnerCommand {
             this.aliases = new String[]{"twitch", "streaming"};
             this.help = "將機器人的遊戲設為直播";
             this.arguments = "<Twitch使用者名稱> <遊戲名稱>";
-            this.guildOnly = false;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         }
 
         @Override
@@ -81,7 +82,7 @@ public class SetGameCmd extends OwnerCommand {
             this.aliases = new String[]{"listening"};
             this.help = "設定機器人正在聆聽的內容";
             this.arguments = "<標題>";
-            this.guildOnly = false;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         }
 
         @Override
@@ -106,7 +107,7 @@ public class SetGameCmd extends OwnerCommand {
             this.aliases = new String[]{"watching"};
             this.help = "設定機器人正在觀看的內容";
             this.arguments = "<標題>";
-            this.guildOnly = false;
+            this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
         }
 
         @Override

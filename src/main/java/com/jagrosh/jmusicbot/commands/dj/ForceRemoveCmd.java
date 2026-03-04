@@ -14,24 +14,26 @@ package com.jagrosh.jmusicbot.commands.dj;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
-import com.jagrosh.jdautilities.menu.OrderedMenu;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
-import com.jagrosh.jmusicbot.utils.OtherUtil;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author Michaili K.
+ * Optimized by Gemini
  */
 public class ForceRemoveCmd extends DJCommand {
+
     public ForceRemoveCmd(Bot bot) {
         super(bot);
         this.name = "forceRemove";
@@ -56,48 +58,62 @@ public class ForceRemoveCmd extends DJCommand {
             return;
         }
 
-        User target;
         List<Member> found = FinderUtil.findMembers(event.getArgs(), event.getGuild());
 
         if (found.isEmpty()) {
             event.reply(event.getClient().getError() + "找不到該使用者！");
-            return;
         } else if (found.size() > 1) {
-            // 如果找到多位使用者，顯示選單讓指令發起者選擇
-            OrderedMenu.Builder builder = new OrderedMenu.Builder();
-            for (int i = 0; i < found.size() && i < 4; i++) {
+            StringSelectMenu.Builder menuBuilder = StringSelectMenu.create("forceRemove:menu")
+                    .setPlaceholder("請選擇一位使用者")
+                    .setRequiredRange(1, 1);
+
+            for (int i = 0; i < found.size() && i < 25; i++) {
                 Member member = found.get(i);
-                builder.addChoice("**" + member.getUser().getName() + "**#" + member.getUser().getDiscriminator());
+                menuBuilder.addOption(member.getEffectiveName() + " (" + member.getUser().getName() + ")", member.getUser().getId());
             }
 
-            builder
-                    .setSelection((msg, i) -> removeAllEntries(found.get(i - 1).getUser(), event))
-                    .setText("找到多位使用者：")
-                    .setColor(event.getSelfMember().getColor())
-                    .useNumbers()
-                    .setUsers(event.getAuthor())
-                    .useCancelButton(true)
-                    .setCancel((msg) -> {
-                    })
-                    .setEventWaiter(bot.getWaiter())
-                    .setTimeout(1, TimeUnit.MINUTES)
-                    .build().display(event.getChannel());
+            StringSelectMenu menu = menuBuilder.build();
 
-            return;
+            event.getChannel().sendMessage("找到多位使用者，請從下方選單選擇：")
+                    .setComponents(ActionRow.of(menu))
+                    .queue(msg -> {
+                        // 使用 EventWaiter 監聽選擇事件
+                        bot.getWaiter().waitForEvent(
+                                StringSelectInteractionEvent.class,
+                                e -> e.getMessageId().equals(msg.getId()) && e.getUser().equals(event.getAuthor()),
+                                e -> {
+                                    String userId = e.getInteraction().getValues().get(0);
+                                    User target = event.getJDA().getUserById(userId);
+
+                                    // 執行刪除邏輯
+                                    int count = handler.getQueue().removeAll(Long.parseLong(userId));
+
+                                    e.editMessage(renderReply(target, count, event))
+                                            .setComponents() // 移除選單
+                                            .queue();
+                                },
+                                1, TimeUnit.MINUTES,
+                                () -> msg.editMessage("操作超時，已取消。").setComponents().queue()
+                        );
+                    });
         } else {
-            target = found.get(0).getUser();
+            // 只有一個使用者，直接移除
+            User target = found.get(0).getUser();
+            removeAllEntries(target, event);
         }
-
-        removeAllEntries(target, event);
-
     }
 
     private void removeAllEntries(User target, CommandEvent event) {
-        int count = ((AudioHandler) event.getGuild().getAudioManager().getSendingHandler()).getQueue().removeAll(target.getIdLong());
+        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
+        int count = handler.getQueue().removeAll(target.getIdLong());
+        event.reply(renderReply(target, count, event));
+    }
+
+    private String renderReply(User target, int count, CommandEvent event) {
         if (count == 0) {
-            event.reply(event.getClient().getWarning() + "**" + target.getName() + "** 在隊列中沒有任何歌曲！");
+            return event.getClient().getWarning() + "**" + target.getName() + "** 在隊列中沒有任何歌曲！";
         } else {
-            event.reply(event.getClient().getSuccess() + "成功從隊列中移除 `" + count + "` 首歌曲，來自 " + FormatUtil.formatUsername(target) + "。");
+            return event.getClient().getSuccess() + "成功從隊列中移除 `" + count + "` 首歌曲，來自 " + FormatUtil.formatUsername(target) + "。";
         }
     }
 }

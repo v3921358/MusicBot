@@ -20,6 +20,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -31,7 +32,7 @@ public class SetAvatarCmd extends OwnerCommand {
         this.help = "設定機器人的頭像";
         this.arguments = "<網址>";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = false;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD, InteractionContextType.BOT_DM};
     }
 
     @Override

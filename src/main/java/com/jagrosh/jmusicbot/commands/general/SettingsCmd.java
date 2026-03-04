@@ -22,6 +22,7 @@ import com.jagrosh.jmusicbot.settings.RepeatMode;
 import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -38,7 +39,7 @@ public class SettingsCmd extends Command {
         this.name = "settings";
         this.help = "顯示機器人的設定";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = true;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD};
     }
 
     @Override
@@ -50,7 +51,7 @@ public class SettingsCmd extends Command {
         VoiceChannel vchan = s.getVoiceChannel(event.getGuild());
         Role role = s.getRole(event.getGuild());
         EmbedBuilder ebuilder = new EmbedBuilder()
-                .setColor(event.getSelfMember().getColor())
+                .setColor(event.getSelfMember().getColors().getPrimary())
                 .setDescription("文字頻道： " + (tchan == null ? "不限" : "**#" + tchan.getName() + "**")
                         + "\n語音頻道： " + (vchan == null ? "不限" : vchan.getAsMention())
                         + "\nDJ 身分組： " + (role == null ? "無" : "**" + role.getName() + "**")

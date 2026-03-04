@@ -5,7 +5,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.settings.RepeatMode;
 import com.jagrosh.jmusicbot.settings.Settings;
-import com.jagrosh.jmusicbot.utils.OtherUtil;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  *
@@ -18,7 +18,7 @@ public class RepeatCmd extends DJCommand {
         this.help = "播放完畢後自動重新加入音樂到播放隊列";
         this.arguments = "[off|all|single]";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.guildOnly = true;
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD};
     }
 
     // 覆寫 MusicCommand 的 execute，因為我們不在乎此指令在哪裡使用

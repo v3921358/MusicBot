@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
  * 音樂指令抽象類別
@@ -39,7 +40,7 @@ public abstract class MusicCommand extends Command {
 
     public MusicCommand(Bot bot) {
         this.bot = bot;
-        this.guildOnly = true; // 僅限伺服器（公會）使用
+        this.contexts = new InteractionContextType[]{InteractionContextType.GUILD}; // 僅限伺服器（公會）使用
         this.category = new Category("音樂");
     }
 

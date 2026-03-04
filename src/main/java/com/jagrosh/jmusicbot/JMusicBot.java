@@ -15,6 +15,7 @@
  */
 package com.jagrosh.jmusicbot;
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -30,6 +31,7 @@ import com.jagrosh.jmusicbot.utils.OtherUtil;
 
 import java.util.Arrays;
 import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -50,8 +52,8 @@ public class JMusicBot
                                 Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE};
     public final static GatewayIntent[] INTENTS = {
             GatewayIntent.DIRECT_MESSAGES,
-            // GatewayIntent.GUILD_EXPRESSIONS,
-            GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+            GatewayIntent.GUILD_EXPRESSIONS,
+            // GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
             GatewayIntent.GUILD_PRESENCES,
             GatewayIntent.GUILD_MESSAGES,
             GatewayIntent.GUILD_MESSAGE_REACTIONS,
@@ -120,15 +122,16 @@ public class JMusicBot
                         + "window, please run in nogui mode using the -Dnogui=true flag.");
             }
         }
-        
+
         // attempt to log in and start
-        try
-        {
+        try {
             JDA jda = JDABuilder.create(config.getToken(), Arrays.asList(INTENTS))
+                    .setAudioModuleConfig(new AudioModuleConfig().withDaveSessionFactory(new JDaveSessionFactory()))
+                    // .setDaveSessionFactory(new DefaultDaveSessionFactory())
                     .enableCache(CacheFlag.VOICE_STATE)
                     .disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI, CacheFlag.ONLINE_STATUS)
                     .setActivity(config.isGameNone() ? null : Activity.playing("loading..."))
-                    .setStatus(config.getStatus()==OnlineStatus.INVISIBLE || config.getStatus()==OnlineStatus.OFFLINE 
+                    .setStatus(config.getStatus() == OnlineStatus.INVISIBLE || config.getStatus() == OnlineStatus.OFFLINE
                             ? OnlineStatus.INVISIBLE : OnlineStatus.DO_NOT_DISTURB)
                     .addEventListeners(client, waiter, new Listener(bot))
                     .build();
