@@ -1,17 +1,15 @@
 /*
- * Copyright 2016 John Grosh <john.a.grosh@gmail.com>.
+ * 版權所有 2016 John Grosh <john.a.grosh@gmail.com>。
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * 根據 Apache License, Version 2.0（以下簡稱「授權」）授權使用。
+ * 除非遵守授權條款，否則不得使用此檔案。
+ * 你可以在以下網址取得授權副本：
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * 除非法律要求或書面同意，否則軟體是「按原樣」提供，
+ * 不附任何明示或暗示的保證。
+ * 詳細請參閱授權條款。
  */
 package com.jagrosh.jmusicbot.commands.dj;
 
@@ -19,44 +17,38 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.DJCommand;
+import com.jagrosh.jmusicbot.utils.OtherUtil;
 
 /**
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class SkiptoCmd extends DJCommand 
-{
-    public SkiptoCmd(Bot bot)
-    {
+public class SkipToCmd extends DJCommand {
+    public SkipToCmd(Bot bot) {
         super(bot);
-        this.name = "skipto";
-        this.help = "skips to the specified song";
-        this.arguments = "<position>";
+        this.name = "skipTo";
+        this.help = "跳到指定的歌曲";
+        this.arguments = "<位置>";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.bePlaying = true;
+        this.bePlaying = true; // 需要正在播放音樂
     }
 
     @Override
-    public void doCommand(CommandEvent event) 
-    {
+    public void doCommand(CommandEvent event) {
         int index = 0;
-        try
-        {
+        try {
             index = Integer.parseInt(event.getArgs());
-        }
-        catch(NumberFormatException e)
-        {
-            event.reply(event.getClient().getError()+" `"+event.getArgs()+"` is not a valid integer!");
+        } catch (NumberFormatException e) {
+            event.reply(event.getClient().getError() + " `" + event.getArgs() + "` 不是有效的整數！");
             return;
         }
-        AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
-        if(index<1 || index>handler.getQueue().size())
-        {
-            event.reply(event.getClient().getError()+" Position must be a valid integer between 1 and "+handler.getQueue().size()+"!");
+        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
+        if (index < 1 || index > handler.getQueue().size()) {
+            event.reply(event.getClient().getError() + " 位置必須是 1 到 " + handler.getQueue().size() + " 之間的有效整數！");
             return;
         }
-        handler.getQueue().skip(index-1);
-        event.reply(event.getClient().getSuccess()+" Skipped to **"+handler.getQueue().get(0).getTrack().getInfo().title+"**");
+        handler.getQueue().skip(index - 1);
+        event.reply(event.getClient().getSuccess() + " 已跳到 **" + handler.getQueue().get(0).getTrack().getInfo().title + "**");
         handler.getPlayer().stopTrack();
     }
 }

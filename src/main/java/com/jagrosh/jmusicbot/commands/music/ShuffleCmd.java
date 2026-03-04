@@ -1,17 +1,15 @@
 /*
- * Copyright 2018 John Grosh <john.a.grosh@gmail.com>.
+ * 版權所有 2018 John Grosh <john.a.grosh@gmail.com>。
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * 根據 Apache License, Version 2.0（以下簡稱「授權」）授權使用。
+ * 除非遵守授權條款，否則不得使用此檔案。
+ * 你可以在以下網址取得授權副本：
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * 除非法律要求或書面同意，否則軟體是「按原樣」提供，
+ * 不附任何明示或暗示的保證。
+ * 詳細請參閱授權條款。
  */
 package com.jagrosh.jmusicbot.commands.music;
 
@@ -19,40 +17,37 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
+import com.jagrosh.jmusicbot.utils.OtherUtil;
 
 /**
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class ShuffleCmd extends MusicCommand 
-{
-    public ShuffleCmd(Bot bot)
-    {
+public class ShuffleCmd extends MusicCommand {
+    public ShuffleCmd(Bot bot) {
         super(bot);
         this.name = "shuffle";
-        this.help = "shuffles songs you have added";
+        this.help = "隨機播放你添加的歌曲";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.beListening = true;
-        this.bePlaying = true;
+        this.beListening = true; // 需要機器人在語音頻道
+        this.bePlaying = true;   // 需要正在播放音樂
     }
 
     @Override
-    public void doCommand(CommandEvent event) 
-    {
-        AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
+    public void doCommand(CommandEvent event) {
+        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         int s = handler.getQueue().shuffle(event.getAuthor().getIdLong());
-        switch (s) 
-        {
+        switch (s) {
             case 0:
-                event.replyError("You don't have any music in the queue to shuffle!");
+                event.reply(event.getClient().getError() + "你在播放隊列中沒有任何歌曲可隨機播放！");
                 break;
             case 1:
-                event.replyWarning("You only have one song in the queue!");
+                event.reply(event.getClient().getWarning() + "你在播放隊列中只有一首歌曲！");
                 break;
             default:
-                event.replySuccess("You successfully shuffled your "+s+" entries.");
+                event.reply(event.getClient().getSuccess() + "你已成功隨機播放你添加的 " + s + " 首歌曲。");
                 break;
         }
     }
-    
+
 }

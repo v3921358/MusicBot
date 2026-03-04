@@ -1,18 +1,3 @@
-/*
- * Copyright 2017 John Grosh <john.a.grosh@gmail.com>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.jagrosh.jmusicbot.commands.owner;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -30,59 +15,56 @@ import net.dv8tion.jda.api.utils.FileUpload;
  *
  * @author John Grosh (john.a.grosh@gmail.com)
  */
-public class DebugCmd extends OwnerCommand 
-{
-    private final static String[] PROPERTIES = {"java.version", "java.vm.name", "java.vm.specification.version", 
-        "java.runtime.name", "java.runtime.version", "java.specification.version",  "os.arch", "os.name"};
-    
+public class DebugCmd extends OwnerCommand {
+    private final static String[] PROPERTIES = {"java.version", "java.vm.name", "java.vm.specification.version",
+            "java.runtime.name", "java.runtime.version", "java.specification.version", "os.arch", "os.name"};
+
     private final Bot bot;
-    
-    public DebugCmd(Bot bot)
-    {
+
+    public DebugCmd(Bot bot) {
         this.bot = bot;
         this.name = "debug";
-        this.help = "shows debug info";
+        this.help = "顯示除錯資訊";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.guildOnly = false;
     }
 
     @Override
-    protected void execute(CommandEvent event)
-    {
+    protected void execute(CommandEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append("```\nSystem Properties:");
-        for(String key: PROPERTIES)
+        sb.append("```\n系統屬性:");
+        for (String key : PROPERTIES)
             sb.append("\n  ").append(key).append(" = ").append(System.getProperty(key));
-        sb.append("\n\nJMusicBot Information:")
-                .append("\n  Version = ").append(OtherUtil.getCurrentVersion())
-                .append("\n  Owner = ").append(bot.getConfig().getOwnerId())
-                .append("\n  Prefix = ").append(bot.getConfig().getPrefix())
-                .append("\n  AltPrefix = ").append(bot.getConfig().getAltPrefix())
-                .append("\n  MaxSeconds = ").append(bot.getConfig().getMaxSeconds())
-                .append("\n  NPImages = ").append(bot.getConfig().useNPImages())
-                .append("\n  SongInStatus = ").append(bot.getConfig().getSongInStatus())
-                .append("\n  StayInChannel = ").append(bot.getConfig().getStay())
-                .append("\n  UseEval = ").append(bot.getConfig().useEval())
-                .append("\n  UpdateAlerts = ").append(bot.getConfig().useUpdateAlerts());
-        sb.append("\n\nDependency Information:")
-                .append("\n  JDA Version = ").append(JDAInfo.VERSION)
-                .append("\n  JDA-Utilities Version = ").append(JDAUtilitiesInfo.VERSION)
-                .append("\n  Lavaplayer Version = ").append(PlayerLibrary.VERSION);
+        sb.append("\n\nJMusicBot 資訊:")
+                .append("\n  版本 = ").append(OtherUtil.getCurrentVersion())
+                .append("\n  擁有者 = ").append(bot.getConfig().getOwnerId())
+                .append("\n  前綴 = ").append(bot.getConfig().getPrefix())
+                .append("\n  替代前綴 = ").append(bot.getConfig().getAltPrefix())
+                .append("\n  最大秒數 = ").append(bot.getConfig().getMaxSeconds())
+                .append("\n  使用播放中圖片 = ").append(bot.getConfig().useNPImages())
+                .append("\n  歌曲狀態顯示 = ").append(bot.getConfig().getSongInStatus())
+                .append("\n  保留在語音頻道 = ").append(bot.getConfig().getStay())
+                .append("\n  使用 Eval = ").append(bot.getConfig().useEval())
+                .append("\n  更新提醒 = ").append(bot.getConfig().useUpdateAlerts());
+        sb.append("\n\n依賴程式庫資訊:")
+                .append("\n  JDA 版本 = ").append(JDAInfo.VERSION)
+                .append("\n  JDA-Utilities 版本 = ").append(JDAUtilitiesInfo.VERSION)
+                .append("\n  Lavaplayer 版本 = ").append(PlayerLibrary.VERSION);
         long total = Runtime.getRuntime().totalMemory() / 1024 / 1024;
         long used = total - (Runtime.getRuntime().freeMemory() / 1024 / 1024);
-        sb.append("\n\nRuntime Information:")
-                .append("\n  Total Memory = ").append(total)
-                .append("\n  Used Memory = ").append(used);
-        sb.append("\n\nDiscord Information:")
+        sb.append("\n\n執行時資訊:")
+                .append("\n  總記憶體 = ").append(total)
+                .append("\n  已使用記憶體 = ").append(used);
+        sb.append("\n\nDiscord 資訊:")
                 .append("\n  ID = ").append(event.getJDA().getSelfUser().getId())
-                .append("\n  Guilds = ").append(event.getJDA().getGuildCache().size())
-                .append("\n  Users = ").append(event.getJDA().getUserCache().size());
+                .append("\n  伺服器數量 = ").append(event.getJDA().getGuildCache().size())
+                .append("\n  使用者數量 = ").append(event.getJDA().getUserCache().size());
         sb.append("\n```");
-        
-        if(event.isFromType(ChannelType.PRIVATE) 
+
+        if (event.isFromType(ChannelType.PRIVATE)
                 || event.getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES))
             event.getChannel().sendFiles(FileUpload.fromData(sb.toString().getBytes(), "debug_information.txt")).queue();
         else
-            event.reply("Debug Information: " + sb.toString());
+            event.reply("除錯資訊: " + sb.toString());
     }
 }

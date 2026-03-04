@@ -1,17 +1,15 @@
 /*
- * Copyright 2016 John Grosh <john.a.grosh@gmail.com>.
+ * 版權所有 2016 John Grosh <john.a.grosh@gmail.com>。
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * 根據 Apache License, Version 2.0（以下簡稱「授權」）授權使用。
+ * 除非遵守授權條款，否則不得使用此檔案。
+ * 你可以在以下網址取得授權副本：
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * 除非法律要求或書面同意，否則軟體是「按原樣」提供，
+ * 不附任何明示或暗示的保證。
+ * 詳細請參閱授權條款。
  */
 package com.jagrosh.jmusicbot.commands.dj;
 
@@ -21,49 +19,43 @@ import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
+import com.jagrosh.jmusicbot.utils.OtherUtil;
 
 /**
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class VolumeCmd extends DJCommand
-{
-    public VolumeCmd(Bot bot)
-    {
+public class VolumeCmd extends DJCommand {
+    public VolumeCmd(Bot bot) {
         super(bot);
         this.name = "volume";
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.help = "sets or shows volume";
+        this.help = "設定或顯示音量";
         this.arguments = "[0-150]";
     }
 
     @Override
-    public void doCommand(CommandEvent event)
-    {
-        AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
+    public void doCommand(CommandEvent event) {
+        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         Settings settings = event.getClient().getSettingsFor(event.getGuild());
         int volume = handler.getPlayer().getVolume();
-        if(event.getArgs().isEmpty())
-        {
-            event.reply(FormatUtil.volumeIcon(volume)+" Current volume is `"+volume+"`");
-        }
-        else
-        {
+        if (event.getArgs().isEmpty()) {
+            event.reply(FormatUtil.volumeIcon(volume) + " 目前音量為 `" + volume + "`");
+        } else {
             int nvolume;
-            try{
+            try {
                 nvolume = Integer.parseInt(event.getArgs());
-            }catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
                 nvolume = -1;
             }
-            if(nvolume<0 || nvolume>150)
-                event.reply(event.getClient().getError()+" Volume must be a valid integer between 0 and 150!");
-            else
-            {
+            if (nvolume < 0 || nvolume > 150)
+                event.reply(event.getClient().getError() + " 音量必須是介於 0 到 150 的有效整數！");
+            else {
                 handler.getPlayer().setVolume(nvolume);
                 settings.setVolume(nvolume);
-                event.reply(FormatUtil.volumeIcon(nvolume)+" Volume changed from `"+volume+"` to `"+nvolume+"`");
+                event.reply(FormatUtil.volumeIcon(nvolume) + " 音量已從 `" + volume + "` 更改為 `" + nvolume + "`");
             }
         }
     }
-    
+
 }

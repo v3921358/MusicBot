@@ -27,7 +27,7 @@ import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.gui.GUI;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
-import java.awt.Color;
+
 import java.util.Arrays;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
@@ -48,7 +48,17 @@ public class JMusicBot
     public final static Permission[] RECOMMENDED_PERMS = {Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION,
                                 Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI,
                                 Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE};
-    public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES};
+    public final static GatewayIntent[] INTENTS = {
+            GatewayIntent.DIRECT_MESSAGES,
+            // GatewayIntent.GUILD_EXPRESSIONS,
+            GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+            GatewayIntent.GUILD_PRESENCES,
+            GatewayIntent.GUILD_MESSAGES,
+            GatewayIntent.GUILD_MESSAGE_REACTIONS,
+            GatewayIntent.GUILD_VOICE_STATES,
+            GatewayIntent.MESSAGE_CONTENT,
+            GatewayIntent.SCHEDULED_EVENTS
+    };
     
     /**
      * @param args the command line arguments
@@ -172,8 +182,8 @@ public class JMusicBot
                 .addCommands(
                         new SettingsCmd(bot),
                         
-                        new LyricsCmd(bot),
-                        new NowplayingCmd(bot),
+                        // new LyricsCmd(bot),
+                        new NowPlayingCmd(bot),
                         new PlayCmd(bot),
                         new PlaylistsCmd(bot),
                         new QueueCmd(bot),
@@ -185,29 +195,29 @@ public class JMusicBot
                         new SkipCmd(bot),
 
                         new ForceRemoveCmd(bot),
-                        new ForceskipCmd(bot),
+                        new ForceSkipCmd(bot),
                         new MoveTrackCmd(bot),
                         new PauseCmd(bot),
-                        new PlaynextCmd(bot),
+                        new PlayNextCmd(bot),
                         new RepeatCmd(bot),
-                        new SkiptoCmd(bot),
+                        new SkipToCmd(bot),
                         new StopCmd(bot),
                         new VolumeCmd(bot),
                         
                         new PrefixCmd(bot),
                         new QueueTypeCmd(bot),
-                        new SetdjCmd(bot),
-                        new SkipratioCmd(bot),
-                        new SettcCmd(bot),
-                        new SetvcCmd(bot),
+                        new SetDJCmd(bot),
+                        new SkipRatioCmd(bot),
+                        new SetTextChannelCmd(bot),
+                        new SetVoiceChannelCmd(bot),
 
-                        new AutoplaylistCmd(bot),
+                        new AutoPlayListCmd(bot),
                         new DebugCmd(bot),
                         new PlaylistCmd(bot),
-                        new SetavatarCmd(bot),
-                        new SetgameCmd(bot),
-                        new SetnameCmd(bot),
-                        new SetstatusCmd(bot),
+                        new SetAvatarCmd(bot),
+                        new SetGameCmd(bot),
+                        new SetNameCmd(bot),
+                        new SetStatusCmd(bot),
                         new ShutdownCmd(bot)
                 );
         

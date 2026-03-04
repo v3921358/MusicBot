@@ -2,16 +2,15 @@
  * Copyright 2018 John Grosh <john.a.grosh@gmail.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * 您不可在未遵守授權條款的情況下使用本檔案。
+ * 您可以在以下網址取得授權內容：
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * 除非法律要求或另有書面約定，
+ * 否則依照授權條款分發的軟體皆以「原樣」提供，
+ * 不附帶任何明示或默示的擔保或條件。
+ * 詳細內容請參閱授權條款。
  */
 package com.jagrosh.jmusicbot.commands.music;
 
@@ -26,23 +25,23 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class NowplayingCmd extends MusicCommand 
+public class NowPlayingCmd extends MusicCommand
 {
-    public NowplayingCmd(Bot bot)
+    public NowPlayingCmd(Bot bot)
     {
         super(bot);
-        this.name = "nowplaying";
-        this.help = "shows the song that is currently playing";
+        this.name = "nowPlaying";
+        this.help = "顯示當前正在播放的歌曲";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
     }
 
     @Override
-    public void doCommand(CommandEvent event) 
+    public void doCommand(CommandEvent event)
     {
         AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
         MessageCreateData data = handler.getNowPlaying(event.getJDA());
-        if(data==null)
+        if(data == null)
         {
             event.getChannel().sendMessage(handler.getNoMusicPlaying(event.getJDA())).queue();
             bot.getNowplayingHandler().clearLastNPMessage(event.getGuild());

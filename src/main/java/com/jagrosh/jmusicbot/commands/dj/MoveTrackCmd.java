@@ -1,85 +1,74 @@
 package com.jagrosh.jmusicbot.commands.dj;
 
-
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.queue.AbstractQueue;
+import com.jagrosh.jmusicbot.utils.OtherUtil;
 
 /**
- * Command that provides users the ability to move a track in the playlist.
+ * 此指令允許使用者將播放清單中的歌曲移動到不同位置。
  */
-public class MoveTrackCmd extends DJCommand
-{
+public class MoveTrackCmd extends DJCommand {
 
-    public MoveTrackCmd(Bot bot)
-    {
+    public MoveTrackCmd(Bot bot) {
         super(bot);
-        this.name = "movetrack";
-        this.help = "move a track in the current queue to a different position";
-        this.arguments = "<from> <to>";
+        this.name = "moveTrack";
+        this.help = "將當前隊列中的歌曲移動到不同位置";
+        this.arguments = "<從哪個位置> <到哪個位置>";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.bePlaying = true;
     }
 
     @Override
-    public void doCommand(CommandEvent event)
-    {
+    public void doCommand(CommandEvent event) {
         int from;
         int to;
 
         String[] parts = event.getArgs().split("\\s+", 2);
-        if(parts.length < 2)
-        {
-            event.replyError("Please include two valid indexes.");
+        if (parts.length < 2) {
+            event.reply(event.getClient().getError() + "請提供兩個有效的索引位置。");
             return;
         }
 
-        try
-        {
-            // Validate the args
+        try {
+            // 驗證輸入的索引
             from = Integer.parseInt(parts[0]);
             to = Integer.parseInt(parts[1]);
-        }
-        catch (NumberFormatException e)
-        {
-            event.replyError("Please provide two valid indexes.");
+        } catch (NumberFormatException e) {
+            event.reply(event.getClient().getError() + "請提供兩個有效的索引位置。");
             return;
         }
 
-        if (from == to)
-        {
-            event.replyError("Can't move a track to the same position.");
+        if (from == to) {
+            event.reply(event.getClient().getError() + "無法將歌曲移動到相同位置。");
             return;
         }
 
-        // Validate that from and to are available
+        // 驗證 from 與 to 是否在有效範圍內
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         AbstractQueue<QueuedTrack> queue = handler.getQueue();
-        if (isUnavailablePosition(queue, from))
-        {
-            String reply = String.format("`%d` is not a valid position in the queue!", from);
-            event.replyError(reply);
+        if (isUnavailablePosition(queue, from)) {
+            String reply = String.format("`%d` 不是隊列中的有效位置！", from);
+            event.reply(event.getClient().getError() + reply);
             return;
         }
-        if (isUnavailablePosition(queue, to))
-        {
-            String reply = String.format("`%d` is not a valid position in the queue!", to);
-            event.replyError(reply);
+        if (isUnavailablePosition(queue, to)) {
+            String reply = String.format("`%d` 不是隊列中的有效位置！", to);
+            event.reply(event.getClient().getError() + reply);
             return;
         }
 
-        // Move the track
+        // 執行歌曲移動
         QueuedTrack track = queue.moveItem(from - 1, to - 1);
         String trackTitle = track.getTrack().getInfo().title;
-        String reply = String.format("Moved **%s** from position `%d` to `%d`.", trackTitle, from, to);
-        event.replySuccess(reply);
+        String reply = String.format("已將 **%s** 從位置 `%d` 移動到 `%d`。", trackTitle, from, to);
+        event.reply(event.getClient().getSuccess() + reply);
     }
 
-    private static boolean isUnavailablePosition(AbstractQueue<QueuedTrack> queue, int position)
-    {
+    private static boolean isUnavailablePosition(AbstractQueue<QueuedTrack> queue, int position) {
         return (position < 1 || position > queue.size());
     }
 }
