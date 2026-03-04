@@ -21,6 +21,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -40,6 +41,7 @@ import org.json.JSONTokener;
  */
 public class OtherUtil
 {
+
     public final static String NEW_VERSION_AVAILABLE = "There is a new version of JMusicBot available!\n"
                     + "Current version: %s\n"
                     + "New Version: %s\n\n"
@@ -68,24 +70,20 @@ public class OtherUtil
         }
         return result;
     }
-    
+
     /**
      * Loads a resource from the jar as a string
-     * 
+     *
      * @param clazz class base object
      * @param name name of resource
      * @return string containing the contents of the resource
      */
-    public static String loadResource(Object clazz, String name)
-    {
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(clazz.getClass().getResourceAsStream(name))))
-        {
+    public static String loadResource(Object clazz, String name) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clazz.getClass().getResourceAsStream(name), StandardCharsets.UTF_8))) {
             StringBuilder sb = new StringBuilder();
             reader.lines().forEach(line -> sb.append("\r\n").append(line));
             return sb.toString().trim();
-        }
-        catch(IOException ignored)
-        {
+        } catch (IOException | NullPointerException ignored) {
             return null;
         }
     }

@@ -162,12 +162,12 @@ public class BotConfig
     
     private void writeToFile()
     {
-        byte[] bytes = loadDefaultConfig().replace("BOT_TOKEN_HERE", token)
+        String content = loadDefaultConfig().replace("BOT_TOKEN_HERE", token)
                 .replace("0 // OWNER ID", Long.toString(owner))
-                .trim().getBytes();
+                .trim();
         try 
         {
-            Files.write(path, bytes);
+            Files.writeString(path, content);
         }
         catch(IOException ex) 
         {
